@@ -8,14 +8,15 @@ A 360-degree healthcare application focused on pregnancy and childhood tracking,
 ### Core Philosophy: The Two-Sided Architecture
 The application is built on a "Database-First" approach where business logic is split into two distinct domains:
 1.  **The Graph Side (Primary):** Heavy reliance on PostgreSQL features (Views, Materialized Views, PL/pgSQL Functions) exposed automatically via PostGraphile.
-2.  **The Service Side (Secondary):** A Node.js/Fastify layer that handles complex external integrations, file processing, and logic that cannot live inside the database.
+2.  **The Service Side (Secondary):** A Serverless layer that handles complex external integrations, file processing, and logic that cannot live inside the database.
 
 ## 2. Technology Stack
 
-*   **Runtime Environment:** Node.js
+*   **Runtime Environment:** Bun
 *   **Language:** TypeScript
-*   **Web Framework:** Fastify
-*   **API Gateway / GraphQL Engine:** PostGraphile (mounted as a Fastify plugin)
+*   **Web Framework:** Fastify (wrapped for Serverless)
+*   **Deployment:** Firebase Functions (Serverless)
+*   **API Gateway / GraphQL Engine:** PostGraphile (v4)
 *   **Primary Database (Relational):** Supabase (PostgreSQL)
     *   *Usage:* User profiles, pregnancy milestones, health logs, app state.
 *   **Static Content Store (NoSQL):** Firebase Firestore
@@ -32,7 +33,7 @@ The application is built on a "Database-First" approach where business logic is 
     *   `Functions`: For RPC-style actions (mutations).
     *   `Materialized Views`: For complex aggregations.
 
-### The Service Side (Fastify Layer)
+### The Service Side (Fastify on Firebase Functions)
 Follows a **Layered Architecture** with a Provider pattern to abstract external dependencies.
 
 *   **Controllers:** Handle incoming HTTP requests (webhooks, custom endpoints).
@@ -49,18 +50,19 @@ Follows a **Layered Architecture** with a Provider pattern to abstract external 
 │   └── no-hallucination.md     # Engineering protocols for AI
 ├── design/
 │   └── ARCHITECTURE.md         # This documentation
-├── package.json
-├── tsconfig.json
-├── docker-compose.yml          # Local development infrastructure
-├── .env.example
+├── package.json                # Project dependencies and scripts (Bun)
+├── tsconfig.json               # TypeScript configuration
+├── .gitignore
 ├── db/                         # DATABASE SIDE
+│   ├── design/                 # Database schema documentation (eer.puml)
 │   ├── migrations/             # SQL migrations
 │   ├── schema/                 # SQL reference files (Views/Functions)
 │   └── seeds/                  # Development data
-└── src/                        # NODE/FASTIFY SIDE
-    ├── app.ts                  # Application entry point
+└── src/                        # SOURCE CODE
+    ├── index.ts                # Firebase Functions entry point
+    ├── app.ts                  # Fastify Application setup
     ├── config/                 # Environment configuration
-    ├── plugins/                # Fastify plugins (PostGraphile setup)
+    ├── plugins/                # Fastify plugins
     └── modules/                # Service Modules
         └── [module_name]/      # e.g., 'scientific-content'
             ├── [module].controller.ts
