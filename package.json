@@ -1,0 +1,29 @@
+{
+  "name": "pregnancy-tracker-api",
+  "version": "1.0.0",
+  "description": "Healthcare application focused on pregnancy and childhood tracking.",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "build": "bun build ./src/index.ts --outdir ./dist --target node",
+    "lint": "echo \"No linter configured yet\"",
+    "test": "echo \"No tests configured yet\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fastify/cors": "^8.5.0",
+    "fastify": "^4.26.0",
+    "firebase-admin": "^11.11.0",
+    "firebase-functions": "^4.6.0",
+    "pg": "^8.11.3",
+    "postgraphile": "^4.13.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/pg": "^8.10.9",
+    "bun-types": "latest",
+    "typescript": "^5.3.3"
+  }
+}
