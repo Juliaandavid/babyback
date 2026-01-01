@@ -1,5 +1,5 @@
 // import * as functions from 'firebase-functions';
-import app from './app'
+import _app from './app'
 
 // Firebase Function export
 // export const api = functions.https.onRequest(async (req, res) => {

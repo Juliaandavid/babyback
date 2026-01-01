@@ -1,8 +1,12 @@
 import Fastify from 'fastify'
-import logger from 'pino'
+import logger, { genReqId } from './config/logger'
 import { handler, instance } from './config/postgraphile'
 
-const app = Fastify({ loggerInstance: logger() })
+const app = Fastify({
+	loggerInstance: logger,
+	genReqId,
+	requestIdLogLabel: 'id'
+})
 
 app.get('/health', async () => {
 	return { status: 'UP' }
