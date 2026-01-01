@@ -2,19 +2,6 @@
 ' Database Schema Documentation
 ' This file tracks the current state of the database schema.
 
-package "Public Schema" {
-    entity "users" {
-        *id : uuid
-        --
-        username : text
-        email : text
-        created_at : timestamp
-    }
-}
 
-note bottom of users
-  Placeholder table for initialization.
-  Actual schema will be defined by migrations.
-end note
 
 @enduml

@@ -1,38 +1,32 @@
-import Fastify from 'fastify';
-import { postgraphile } from 'postgraphile';
+import Fastify from 'fastify'
+import logger from 'pino'
+import { handler, instance } from './config/postgraphile'
 
-const app = Fastify({ logger: true });
+const app = Fastify({ loggerInstance: logger() })
 
-// Basic Health Check
 app.get('/health', async () => {
-  return { status: 'ok' };
-});
+	return { status: 'UP' }
+})
 
-// PostGraphile Configuration
-// Note: This relies on DATABASE_URL env var.
-// In a real Serverless environment, connection pooling is critical.
-// Fastify v4 does not support 'use' directly (middleware) without @fastify/middie or @fastify/express.
-// We are mounting PostGraphile manually for now.
+app.options(instance.graphqlRoute, handler(instance.graphqlRouteHandler))
+app.post(instance.graphqlRoute, handler(instance.graphqlRouteHandler))
 
-// Initialize PostGraphile Handler once (Global Scope for Serverless Warm Starts)
-const postgraphileHandler = postgraphile(
-  process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/postgres',
-  'public',
-  {
-    watchPg: process.env.NODE_ENV === 'development',
-    graphiql: true,
-    enhanceGraphiql: true,
-  }
-);
+if (instance.options.graphiql) {
+	if (instance.graphiqlRouteHandler) {
+		app.head(instance.graphiqlRoute, handler(instance.graphiqlRouteHandler))
+		app.get(instance.graphiqlRoute, handler(instance.graphiqlRouteHandler))
+	}
+}
 
-app.all('/graphql', (req, reply) => {
-  // @ts-ignore - mismatch between fastify raw req/res and node http req/res types in strict mode
-  return postgraphileHandler(req.raw, reply.raw);
-});
+if (process.env.GRAPHILE_ENV === 'development') {
+	const port = Number(process.env.PORT) || 3000
+	app.listen({ port, host: '0.0.0.0' }, (err, address) => {
+		if (err) {
+			app.log.error(String(err))
+			process.exit(1)
+		}
+		app.log.info(`PostGraphiQL available at ${address}${instance.graphiqlRoute}`)
+	})
+}
 
-app.all('/graphiql', (req, reply) => {
-  // @ts-ignore
-  return postgraphileHandler(req.raw, reply.raw);
-});
-
-export default app;
+export default app

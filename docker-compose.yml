@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  db:
+    container_name: babyback-db
+    image: postgres:16
+    environment:
+      POSTGRES_USER: babyr
+      POSTGRES_PASSWORD: Password123
+      POSTGRES_DB: babydb
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  db_data:
